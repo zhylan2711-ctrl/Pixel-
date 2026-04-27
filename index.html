@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            background-color: #0b0e14; color: white; font-family: 'Segoe UI', sans-serif;
+            display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0;
+        }
+        .logo { font-size: 24px; font-weight: bold; color: #27ae60; text-transform: uppercase; margin-bottom: 10px; }
+        .controls { background: #161b22; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; text-align: center; }
+        
+        /* Контейнер для мільйона точок */
+        .viewport {
+            width: 320px; height: 320px; border: 2px solid #27ae60;
+            overflow: auto; background: #000; border-radius: 5px;
+        }
+        canvas { display: block; image-rendering: pixelated; transform-origin: 0 0; cursor: crosshair; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: white; color: #333; padding: 25px; border-radius: 15px; text-align: center; width: 260px; }
+        .btn-pay { display: block; margin-top: 15px; padding: 12px; background: #71b32a; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="logo">The 1M Grid ⚔️</div>
+    
+    <div class="controls">
+        <div>Використано: <b id="pCount">0</b> / 9 пікселів</div>
+        <div style="margin-top:10px; font-size: 12px;">Наближення: <input type="range" id="zoom" min="1" max="20" value="5"></div>
+    </div>
+
+    <div class="viewport">
+        <canvas id="canvas" width="1000" height="1000"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const zoomInput = document.getElementById('zoom');
+        let count = 0;
+
+        // Початковий колір полотна
+        ctx.fillStyle = '#111';
+        ctx.fillRect(0,0,1000,1000);
+
+        // Зум
+        zoomInput.oninput = () => canvas.style.transform = `scale(${zoomInput.value})`;
+        canvas.style.transform = "scale(5)";
+
+        canvas.addEventListener('click', (e) => {
+            if(count >= 9) { alert("Ліміт 9 пікселів!"); return; }
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) * (1000 / rect.width));
+            const y = Math.floor((e.clientY - rect.top) * (1000 / rect.height));
+
+            ctx.fillStyle = '#27ae60';
+            ctx.fillRect(x, y, 1, 1);
+            
+            count++;
+            document.getElementById('pCount').innerText = count;
+            
+            alert(`Піксель [${x}:${y}] обрано! Оплатіть $1 адміну.`);
+        });
+    </script>
+</body>
+</html>
